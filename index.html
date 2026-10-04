@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$SEEN | You've Seen This</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent-color: #ccff00; /* Toxic neon yellow/green */
+            --accent-glow: rgba(204, 255, 0, 0.5);
+            --bg-dark: #070707;
+            --bg-card: #111111;
+            --text-light: #e0e0e0;
+            --text-white: #ffffff;
+            --border-dark: #222222;
+        }
+
+        /* CRT Scanline Effect Overlay */
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 9999;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Space Mono', monospace;
+            color: var(--text-light);
+            background-color: var(--bg-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* Glitch Animations */
+        @keyframes glitch {
+            0% { text-shadow: 2px 2px 0px #ff003c, -2px -2px 0px #00e5ff; }
+            25% { text-shadow: -2px 2px 0px #ff003c, 2px -2px 0px #00e5ff; }
+            50% { text-shadow: 2px -2px 0px #ff003c, -2px 2px 0px #00e5ff; }
+            75% { text-shadow: -2px -2px 0px #ff003c, 2px 2px 0px #00e5ff; }
+            100% { text-shadow: 2px 2px 0px #ff003c, -2px -2px 0px #00e5ff; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 15px var(--accent-glow)); }
+            50% { transform: translateY(-15px) scale(1.02); filter: drop-shadow(0 0 35px var(--accent-color)); }
+            100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 15px var(--accent-glow)); }
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: rgba(7, 7, 7, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--accent-color);
+            padding: 1rem 0;
+        }
+        .navbar-brand {
+            font-family: 'Anton', sans-serif;
+            font-size: 2.5rem;
+            color: var(--text-white) !important;
+            letter-spacing: 2px;
+            transition: 0.3s;
+        }
+        .navbar-brand:hover {
+            animation: glitch 0.3s infinite;
+        }
+        .nav-link {
+            color: var(--text-light) !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin: 0 10px;
+            transition: 0.3s;
+        }
+        .nav-link:hover { color: var(--accent-color) !important; text-shadow: 0 0 10px var(--accent-glow); }
+
+        /* Hero Section */
+        .hero-section {
+            background: radial-gradient(circle at center, #1a1a1a 0%, var(--bg-dark) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 140px 20px 60px;
+        }
+
+        .main-title {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(4rem, 12vw, 9rem);
+            color: var(--text-white);
+            text-transform: uppercase;
+            margin-bottom: 0;
+            line-height: 1.1;
+            letter-spacing: 2px;
+            text-shadow: 4px 4px 0px var(--border-dark);
+        }
+
+        .sub-title {
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            color: var(--accent-color);
+            margin-top: 15px;
+            margin-bottom: 30px;
+            font-weight: 700;
+            background: #000;
+            padding: 5px 15px;
+            border-radius: 4px;
+        }
+
+        /* Main Hero Art */
+        .hero-img-container {
+            position: relative;
+            margin: 20px 0 40px;
+            animation: float 5s ease-in-out infinite;
+        }
+        .hero-art {
+            width: clamp(250px, 40vw, 400px);
+            height: clamp(250px, 40vw, 400px);
+            border-radius: 15px;
+            border: 4px solid var(--accent-color);
+            object-fit: cover;
+        }
+
+        /* CA Container */
+        .ca-container {
+            background: rgba(204, 255, 0, 0.05);
+            border: 1px dashed var(--accent-color);
+            padding: 15px 25px;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            max-width: 700px;
+            width: 90%;
+            word-break: break-all;
+            margin-bottom: 40px;
+            color: var(--text-white);
+        }
+        .ca-container span { color: var(--accent-color); font-weight: bold; }
+
+        /* Buttons */
+        .btn-group-custom {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .cta-btn {
+            background: var(--bg-dark);
+            color: var(--text-white);
+            padding: 15px 35px;
+            border-radius: 0;
+            border: 2px solid var(--border-dark);
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            transition: 0.3s all;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-btn.primary {
+            background: var(--accent-color);
+            color: var(--bg-dark);
+            border-color: var(--accent-color);
+        }
+        .cta-btn:hover {
+            transform: translateY(-5px);
+            background: var(--text-white);
+            color: var(--bg-dark);
+            border-color: var(--text-white);
+            box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
+        .cta-btn.primary:hover {
+            background: var(--text-white);
+            border-color: var(--text-white);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        /* Headings */
+        .section-heading {
+            font-family: 'Anton', sans-serif;
+            font-size: 3.5rem;
+            color: var(--text-white);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Gallery / Library Section (Restored from PUFF) */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid var(--border-dark);
+            transition: 0.3s;
+            background: #000;
+        }
+        .gallery-item:hover {
+            transform: scale(1.05);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 25px var(--accent-glow);
+            z-index: 10;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            display: block;
+            filter: grayscale(20%);
+            transition: 0.3s;
+        }
+        .gallery-item:hover img {
+            filter: grayscale(0%);
+        }
+
+        /* Phases / Details (Restored from PUFF) */
+        .phase-card {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 6px solid var(--border-dark);
+            height: 100%;
+            transition: 0.3s;
+        }
+        .phase-card:hover { 
+            background: #1a1a1a; 
+            transform: translateY(-5px); 
+            border-left-color: var(--accent-color);
+            box-shadow: 10px 10px 0px rgba(204, 255, 0, 0.1);
+        }
+        .phase-title {
+            font-family: 'Anton', sans-serif;
+            color: var(--text-white);
+            font-size: 2rem;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        footer {
+            padding: 60px 0;
+            border-top: 1px solid var(--border-dark);
+            text-align: center;
+            background-color: #030303;
+        }
+        .social-link {
+            font-size: 2.5rem;
+            color: var(--text-white);
+            margin: 0 15px;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .social-link:hover { 
+            color: var(--accent-color); 
+            transform: translateY(-5px) scale(1.1); 
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        @media (max-width: 768px) {
+            .navbar-brand { font-size: 2rem; }
+            .section-heading { font-size: 2.8rem; }
+            .btn-group-custom { flex-direction: column; width: 100%; }
+            .cta-btn { width: 100%; text-align: center; }
+            .ca-container { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">$SEEN</a>
+            <button class="navbar-toggler navbar-dark" style="border:none;" type="button" data-bs-toggle="collapse" data-bs-target="#seenNav">
+                <i class="fas fa-bars" style="color: var(--accent-color); font-size: 1.5rem;"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="seenNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#home">The Image</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#story">The Phenomenon</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#gallery">The Archives</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#details">The Un-Roadmap</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#socials">Community</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <h1 class="main-title">YOU'VE SEEN THIS.</h1>
+        <p class="sub-title">Don’t remember it? Weird. Everyone else does.</p>
+        
+        <div class="hero-img-container">
+            <!-- PLACE MAIN ARTWORK HERE -->
+            <img src="photo_2026-10-04_08-13-27.jpg" class="hero-art" alt="$SEEN Main Artwork">
+        </div>
+        
+        <div class="ca-container">
+            <span>CA:</span> BoPTyMBK1ci7Z9snYogUVUP3RjWTsrpDfhN4zQ6rBAGS
+        </div>
+        
+        <div class="btn-group-custom">
+            <a href="https://bags.fm/BoPTyMBK1ci7Z9snYogUVUP3RjWTsrpDfhN4zQ6rBAGS" class="cta-btn primary" target="_blank">BUY $SEEN</a>
+            <a href="https://t.me/seen_chats" class="cta-btn" target="_blank">JOIN TELEGRAM</a>
+            <a href="https://x.com/BagKitchendev" class="cta-btn" target="_blank">FOLLOW ON X</a>
+        </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="container py-5 mt-5" id="story">
+        <div class="row text-center">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="section-heading mb-4">THE METADATA</h2>
+                <p class="lead fs-5"><strong>$SEEN</strong> is a simple internet meta-meme built around the idea that everyone somehow remembers a meme that never existed.</p>
+                <p class="lead fs-5 mt-3">It lives in your peripheral vision. It feels familiar. It's on the tip of your tongue. You can't explain it, but you know you've seen it before.</p>
+                <p class="lead fs-5 mt-3" style="color: var(--accent-color);">Don't try to fight the memory. Just accept that it's always been there.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery / Library Section -->
+    <section class="container py-5" id="gallery">
+        <h2 class="text-center mb-5 section-heading" style="color: var(--accent-color);">:: THE ARCHIVES ::</h2>
+        <div class="row justify-content-center g-4">
+            <!-- PLACE LIBRARY ARTWORKS HERE -->
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-13-41.jpg" alt="Seen Archive 1"></div></div>
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-13-47.jpg" alt="Seen Archive 2"></div></div>
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-13-54.jpg" alt="Seen Archive 3"></div></div>
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-14-05.jpg" alt="Seen Archive 4"></div></div>
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-14-00.jpg" alt="Seen Archive 5"></div></div>
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-14-11.jpg" alt="Seen Archive 1"></div></div>
+            <div class="col-md-4 col-sm-6"><div class="gallery-item"><img src="photo_2026-10-04_08-14-21.jpg" alt="Seen Archive 2"></div>
+        </div>
+    </section>
+
+    <!-- Details / Phase Cards Section -->
+    <section class="py-5 mt-4" id="details" style="background: rgba(17, 17, 17, 0.7); border-top: 1px dashed var(--border-dark);">
+        <div class="container">
+            <h2 class="text-center mb-5 section-heading">THE UN-ROADMAP</h2>
+            <div class="row justify-content-center g-4">
+                <div class="col-md-4">
+                    <div class="phase-card">
+                        <div class="phase-title">1. NO ROADMAP</div>
+                        <p class="text-secondary">Where are we going? Doesn't matter. You already know the destination. There are no charts for places you've already been.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="phase-card">
+                        <div class="phase-title">2. NO PROMISES</div>
+                        <p class="text-secondary">Just a collective digital memory of something that shouldn't be there. We promise nothing, but you'll remember everything.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="phase-card" style="border-left-color: var(--accent-color);">
+                        <div class="phase-title" style="color: var(--accent-color);">3. YOU'VE SEEN THIS</div>
+                        <p class="text-white">Scroll up. Look again. Tell me I'm wrong. The image is already burned into the blockchain's subconscious.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer / Socials -->
+    <footer id="socials">
+        <div class="container">
+            <h2 class="section-heading mb-4">YOU REMEMBER WHAT TO DO</h2>
+            <div class="py-4">
+                <a href="https://x.com/BagKitchendev" class="social-link" target="_blank"><i class="fab fa-twitter"></i></a>
+                <a href="https://t.me/seen_chats" class="social-link" target="_blank"><i class="fab fa-telegram"></i></a>
+                <a href="https://bags.fm/BoPTyMBK1ci7Z9snYogUVUP3RjWTsrpDfhN4zQ6rBAGS" class="social-link" target="_blank" style="text-decoration: none; font-family: 'Anton', sans-serif; font-size: 1.5rem; vertical-align: middle; padding: 0 10px;">BAGS</a>
+            </div>
+            <p class="mt-4" style="font-family: 'Space Mono', monospace; color: #555;">© 2026 $SEEN. YOU'VE SEEN THIS BEFORE.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
